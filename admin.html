@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zenvy Admin Panel</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header class="header">
+  <div class="logo">Zenvy Admin</div>
+  <nav class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="wishlist.html">Wishlist</a>
+    <a href="cart.html">Cart</a>
+  </nav>
+</header>
+
+<!-- ADD PRODUCT FORM -->
+<section class="admin-section">
+  <h2>Add New Product</h2>
+  <div class="admin-form">
+    <input type="text" id="productName" placeholder="Product Name">
+    <input type="number" id="productPrice" placeholder="Price">
+    <input type="text" id="productImage" placeholder="Image URL">
+    <input type="text" id="productCategory" placeholder="Category">
+    <button onclick="addProduct()">Add Product</button>
+  </div>
+</section>
+
+<!-- EXISTING PRODUCTS -->
+<section class="admin-section">
+  <h2>Existing Products</h2>
+  <div class="admin-products" id="adminProductsContainer"></div>
+</section>
+
+<!-- SCRIPT -->
+<script src="script.js"></script>
+<script>
+function displayAdminProducts() {
+  const container = document.getElementById("adminProductsContainer");
+  const products = JSON.parse(localStorage.getItem("zenvyProducts")) || [];
+  container.innerHTML = "";
+
+  products.forEach((p, index) => {
+    container.innerHTML += `
+      <div class="admin-product-card">
+        <img src="${p.image}" alt="${p.name}">
+        <div class="product-info">
+          <h3>${p.name}</h3>
+          <p>₹${p.price}</p>
+          <p>Category: ${p.category}</p>
+          <button onclick="editProduct(${index})">Edit</button>
+          <button onclick="deleteProduct(${index})">Delete</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+// DELETE PRODUCT
+function deleteProduct(index) {
+  let products = JSON.parse(localStorage.getItem("zenvyProducts")) || [];
+  if (confirm(`Are you sure you want to delete ${products[index].name}?`)) {
+    products.splice(index, 1);
+    localStorage.setItem("zenvyProducts", JSON.stringify(products));
+    displayAdminProducts();
+    alert("✅ Product deleted successfully!");
+  }
+}
+
+// EDIT PRODUCT
+function editProduct(index) {
+  let products = JSON.parse(localStorage.getItem("zenvyProducts")) || [];
+  const name = prompt("Enter new product name:", products[index].name);
+  const price = prompt("Enter new price:", products[index].price);
+  const image = prompt("Enter new image URL:", products[index].image);
+  const category = prompt("Enter new category:", products[index].category);
+
+  if (name && price && image && category) {
+    products[index] = { name, price: parseInt(price), image, category };
+    localStorage.setItem("zenvyProducts", JSON.stringify(products));
+    displayAdminProducts();
+    alert("✅ Product updated successfully!");
+  }
+}
+
+// INITIALIZE
+displayAdminProducts();
+populateCategories();
+</script>
+
+</body>
+</html>
